@@ -1,0 +1,25 @@
+{% load static %}
+{% load django_bootstrap5 %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Mell{% endblock %}</title>
+    <!-- Подключение jQuery -->
+    <link rel="stylesheet" href="{% static 'css/fonts.css' %}">
+    <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    {% include 'includes/navbar.html' %}
+    {% block content %}
+    <!-- Контент страницы -->
+    {% endblock %}
+    
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>
