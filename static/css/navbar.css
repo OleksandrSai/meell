@@ -1,0 +1,25 @@
+:root {
+  --font-intro: 'Intro', sans-serif;
+}
+
+.mell_logo {
+  font-size: 24px;
+  font-family: var(--font-intro);
+  user-select: none;
+}
+
+.mell_font{
+  font-family: var(--font-intro);
+}
+
+.dropdown-toggle::after {
+  display: none;
+}
+.sticky-top{
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+}
+header{
+  user-select: none;
+}

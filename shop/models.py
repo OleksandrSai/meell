@@ -5,13 +5,27 @@ from shop.utils import random_slug
 
 
 class Category(models.Model):
-    name = models.CharField(verbose_name="Назва категорії", max_length=250, db_index=True)
-    parent = models.ForeignKey('self', on_delete=models.CASCADE, related_name="children",
-                               verbose_name="Батьківська категорія", null=True, blank=True)
-    slug = models.SlugField(verbose_name="Лінк", max_length=250, unique=True, null=False, editable=True)
+    name = models.CharField(
+        verbose_name="Назва категорії", max_length=250, db_index=True
+    )
+    parent = models.ForeignKey(
+        "self",
+        on_delete=models.CASCADE,
+        related_name="children",
+        verbose_name="Батьківська категорія",
+        null=True,
+        blank=True,
+    )
+    slug = models.SlugField(
+        verbose_name="Лінк", max_length=250, unique=True, null=False, editable=True
+    )
     meta_title = models.CharField(verbose_name="Meta Title", max_length=255, blank=True)
-    meta_description = models.TextField(verbose_name="Meta Description", blank=True)
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата створення")
+    meta_description = models.TextField(
+        verbose_name="Meta Description", null=True, blank=True
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True, null=True, verbose_name="Дата створення"
+    )
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата оновлення")
 
     class Meta:
@@ -30,18 +44,26 @@ class Category(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name + random_slug())
-            super(Category, self).save(*args, **kwargs)
+        super(Category, self).save(*args, **kwargs)
 
 
 class Brand(models.Model):
-    name = models.CharField(verbose_name="Назва бренду", max_length=250, unique=True, db_index=True)
+    name = models.CharField(
+        verbose_name="Назва бренду", max_length=250, unique=True, db_index=True
+    )
     slug = models.SlugField(verbose_name="Слаг", unique=True, blank=True)
     meta_title = models.CharField(verbose_name="Meta Title", max_length=255, blank=True)
     meta_description = models.TextField(verbose_name="Meta Description", blank=True)
-    logo = models.ImageField(verbose_name="Логотип", upload_to='brands/logos/', blank=True, null=True)
+    logo = models.ImageField(
+        verbose_name="Логотип", upload_to="brands/logos/", blank=True, null=True
+    )
     available = models.BooleanField(verbose_name="Наявність", default=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата створення")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата оновлення")
+
+    class Meta:
+        verbose_name = "Бренд"
+        verbose_name_plural = "Бренди"
 
     def __str__(self):
         return self.name
@@ -49,13 +71,25 @@ class Brand(models.Model):
 
 class Product(models.Model):
     name = models.CharField(verbose_name="Назва товару", max_length=250, db_index=True)
-    parent = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="products")
-    price = models.DecimalField(verbose_name="Ціна")
+    parent = models.ForeignKey(
+        Category, on_delete=models.CASCADE, related_name="products"
+    )
+    price = models.DecimalField(verbose_name="Ціна", max_digits=10, decimal_places=2)
     discount_percent = models.PositiveIntegerField(verbose_name="Знижка (%)", default=0)
-    brand = models.ForeignKey(Brand, verbose_name="Бренд", on_delete=models.CASCADE, related_name='products')
-    category = models.ForeignKey(Category, verbose_name="Категорія", on_delete=models.CASCADE, null=True, blank=True)
-    image = models.ImageField(verbose_name="Основне зображення", upload_to='products/products/%Y/%m/%d')
-    stock = models.PositiveIntegerField(verbose_name="В наявності", default=0)
+    brand = models.ForeignKey(
+        Brand, verbose_name="Бренд", on_delete=models.CASCADE, related_name="products"
+    )
+    category = models.ForeignKey(
+        Category,
+        verbose_name="Категорія",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
+    image = models.ImageField(
+        verbose_name="Основне зображення", upload_to="products/products/%Y/%m/%d"
+    )
+    stock = models.PositiveIntegerField(verbose_name="В наявності", default=1)
     available = models.BooleanField(verbose_name="Наявність", default=True)
     is_new = models.BooleanField(verbose_name="Новинка", default=False)
     is_on_sale = models.BooleanField(verbose_name="Акційний товар", default=False)
@@ -63,6 +97,10 @@ class Product(models.Model):
     meta_description = models.TextField(verbose_name="Meta Description", blank=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата створення")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата оновлення")
+
+    class Meta:
+        verbose_name = "Продукт"
+        verbose_name_plural = "Продукти"
 
     def __str__(self):
         return self.name
@@ -79,23 +117,21 @@ class Product(models.Model):
         """Відображення ціни з урахуванням знижки для адмінки"""
         return f"{self.discounted_price:.2f} грн"
 
+    def save(self, *args, **kwargs):
+        if self.stock == 0:
+            self.available = False
+        super().save(*args, **kwargs)
+
 
 class ProductImage(models.Model):
     product = models.ForeignKey(
-        Product,
-        on_delete=models.CASCADE,
-        related_name='images',
-        verbose_name="Товар"
+        Product, on_delete=models.CASCADE, related_name="images", verbose_name="Товар"
     )
     image = models.ImageField(
-        verbose_name="Зображення",
-        upload_to='products/gallery/%Y/%m/%d'
+        verbose_name="Зображення", upload_to="products/gallery/%Y/%m/%d"
     )
 
-    is_main = models.BooleanField(
-        verbose_name="Основне зображення",
-        default=False
-    )
+    is_main = models.BooleanField(verbose_name="Основне зображення", default=False)
 
     def __str__(self):
         return f"{self.product.name} ({self.id})"

@@ -1,0 +1,64 @@
+{% load django_bootstrap5 %}
+{% load static %}
+
+<header class="bg-white border-bottom sticky-top">
+    <div class="container">
+        {# Верхняя строка с адресом, лого и иконками #}
+        <div class="row align-items-center p-4">
+            {# Левая часть - адрес и время (только на десктопе) #}
+            <div class="col-md-4 d-none d-md-flex align-items-center">
+                <span class="me-3">
+                    <i class="bi bi-geo-alt-fill" style="font-size: 1.2rem;"></i>
+                    м.Дніпро, вул Олександра Поля 141
+                </span>
+            </div>
+
+            {# Меню навигации — только для мобильных #}
+            <div class="col-4 d-flex d-md-none justify-content-start">
+                <nav class="navbar navbar-light p-0">
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mobileMenu" aria-controls="mobileMenu" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </nav>
+            </div>
+
+            {# Центр - логотип (на мобильных занимает больше места) #}
+            <div class="col-4 col-md-4 text-center">
+                <a class="navbar-brand fw-bold text-dark mx-auto mell_logo" href="{% url 'shop:main_page' %}">
+                    MEELL
+                </a>
+            </div>
+
+            {# Правая часть - иконки (на мобильных сжимается) #}
+            <div class="col-4 col-md-4 d-flex justify-content-end mt-2 mt-md-0">
+                <a href="#" class="me-3 text-dark">
+                    <i class="bi bi-person" style="font-size: 1.2rem;"></i>
+                </a>
+                <a href="#" class="text-dark position-relative">
+                    <i class="bi bi-bag" style="font-size: 1.2rem;"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        0
+                    </span>
+                </a>
+            </div>
+        </div>
+
+        {# Мобильное меню - появляется при нажатии на бургер #}
+        <div class="row collapse d-md-none" id="mobileMenu">
+            <div class="col">
+                <nav class="navbar navbar-light">
+                    {% include 'header/navbar.html' %}
+                </nav>
+            </div>
+        </div>
+
+        {# Меню навигации — только для десктопа #}
+        <div class="row d-none d-md-flex">
+
+                <nav class="navbar navbar-expand-md navbar-light p-0">
+                    {% include 'header/navbar.html' %}
+                </nav>
+
+        </div>
+    </div>
+</header>

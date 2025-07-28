@@ -1,0 +1,11 @@
+<ul class="dropdown-menu">
+  {% for category in categories %}
+    <li class="{% if category.children.all %}dropdown-submenu{% endif %}">
+      <a class="dropdown-item {% if category.children.all %}dropdown-toggle{% endif %}"
+         href="#">
+        {{ category.name }}
+      </a>
+    </li>
+  {% endfor %}
+</ul>
+
